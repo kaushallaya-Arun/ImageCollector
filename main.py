@@ -2,10 +2,9 @@ import os
 import requests
 from bs4 import BeautifulSoup
 from urllib.parse import urljoin
-from urllib.request import urlretrieve
-from zipfile import ZipFile
 from concurrent.futures import ThreadPoolExecutor
 import random
+import string
 
 # Function to generate a random User-Agent
 def get_random_user_agent():
@@ -17,31 +16,37 @@ def get_random_user_agent():
     ]
     return random.choice(user_agents)
 
-def download_image(img_url, output_folder, overwrite=False):
-    img_filename = os.path.join(output_folder, os.path.basename(img_url))
-    if not overwrite and os.path.exists(img_filename):
-        print(f"Skipped: {img_filename} (already exists)")
-        return
-
+def download_image(img_url, output_folder, overwrite=False, headers=None, proxies=None):
     try:
-        headers = {'User-Agent': get_random_user_agent()}
-        response = requests.get(img_url, headers=headers)
+        if headers is None:
+            headers = {'User-Agent': get_random_user_agent()}
+
+        response = requests.get(img_url, headers=headers, proxies=proxies)
         response.raise_for_status()
+
+        # Generate a short and unique filename
+        short_filename = ''.join(random.choices(string.ascii_letters + string.digits, k=8))
+        img_filename = os.path.join(output_folder, f"{short_filename}.jpg")
+
+        # Ensure the file does not exist before saving
+        if not overwrite and os.path.exists(img_filename):
+            return
 
         with open(img_filename, 'wb') as img_file:
             img_file.write(response.content)
 
         print(f"Downloaded: {img_filename}")
+
     except Exception as e:
         print(f"Error downloading {img_url}: {e}")
 
-def download_images(url, output_folder='downloaded_images', extensions=None, overwrite=False, max_workers=10):
+def download_images(url, output_folder='downloaded_images', extensions=None, overwrite=False, max_workers=10, proxies=None):
     os.makedirs(output_folder, exist_ok=True)
 
     try:
         # Fetch HTML content
         headers = {'User-Agent': get_random_user_agent()}
-        response = requests.get(url, headers=headers)
+        response = requests.get(url, headers=headers, proxies=proxies)
         response.raise_for_status()
 
         soup = BeautifulSoup(response.text, 'html.parser')
@@ -63,19 +68,7 @@ def download_images(url, output_folder='downloaded_images', extensions=None, ove
 
         # Download images concurrently
         with ThreadPoolExecutor(max_workers=max_workers) as executor:
-            executor.map(lambda img_url: download_image(img_url, output_folder, overwrite), img_urls)
-
-        # Create a zip file
-        zip_filename = os.path.join(output_folder, 'images.zip')
-        with ZipFile(zip_filename, 'w') as zipf:
-            for img_url in img_urls:
-                img_filename = os.path.basename(img_url)
-                img_path = os.path.join(output_folder, img_filename)
-                if os.path.exists(img_path):
-                    zipf.write(img_path, img_filename)
-
-        print(f"\nImages downloaded and saved in '{output_folder}'.")
-        print(f"Zip file created: {zip_filename}")
+            executor.map(lambda img_url: download_image(img_url, output_folder, overwrite, headers, proxies), img_urls)
 
     except requests.RequestException as e:
         print(f"Error: {e}")
@@ -95,7 +88,12 @@ if __name__ == "__main__":
     overwrite = input("Do you want to overwrite existing files? (y/n): ").strip().lower() == 'y'
 
     # Specify the maximum number of concurrent downloads
-    max_workers = int(input("Enter the maximum number of concurrent downloads (press Enter for 10): ").strip()) or 10
+    max_workers_input = input("Enter the maximum number of concurrent downloads (press Enter for 10): ").strip()
+    max_workers = int(max_workers_input) if max_workers_input else 10
+
+    # Specify proxy (optional)
+    use_proxy = input("Do you want to use a proxy? (y/n): ").strip().lower() == 'y'
+    proxies = {'http': 'http://your-proxy-url', 'https': 'https://your-proxy-url'} if use_proxy else None
 
     # Download and save images
-    download_images(url, output_folder, extensions, overwrite, max_workers)
+    download_images(url, output_folder, extensions, overwrite, max_workers, proxies)

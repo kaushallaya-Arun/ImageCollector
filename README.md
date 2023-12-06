@@ -10,7 +10,7 @@ This Python script allows you to download images from a given URL, filter them b
 - Downloads images concurrently using threads
 - Supports custom User-Agent for each request
 - Option to overwrite existing files
-- Creates a zip file containing all downloaded images
+
 
 ## Usage
 1. Run the script.
@@ -26,11 +26,11 @@ This Python script allows you to download images from a given URL, filter them b
 
 2. Install dependencies:
    ```bash
-   pip install -r requirements.txt```
+   pip install -r requirements.txt
 
 3. Run the script:
    ```bash
-   python image_downloader.py```
+   python image_downloader.py
 
 ## Configuration
 - `output_folder`: Set the desired output folder for downloaded images.

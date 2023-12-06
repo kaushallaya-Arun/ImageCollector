@@ -24,16 +24,35 @@ This Python script allows you to download images from a given URL, filter them b
    git clone https://github.com/your-username/image-downloader.git
    cd image-downloader ```
 
-2.Install dependencies:
-   ```pip install -r requirements.txt```
+2. Install dependencies:
+   ```bash
+   pip install -r requirements.txt```
 
-Usage Example:
-   ```python image_downloader.py```
+3. Run the script:
+   ```bash
+   python image_downloader.py```
 
-Configuration:
-~output_folder: Set the desired output folder for downloaded images.
-~extensions: Specify image extensions to filter (comma-separated, e.g., jpg,png,gif).
-~overwrite: Set to True to overwrite existing files, or False to skip them.
-~max_workers: Set the maximum number of concurrent downloads.
+## Configuration
+- `output_folder`: Set the desired output folder for downloaded images.
+- `extensions`: Specify image extensions to filter (comma-separated, e.g., jpg,png,gif).
+- `overwrite`: Set to True to overwrite existing files, or False to skip them.
+- `max_workers`: Set the maximum number of concurrent downloads.
 
-**Contributing:- Feel free to contribute by opening issues or submitting pull requests.
+## Using Tor for Anonymity
+To access .onion URLs anonymously, follow these steps:
+
+1. Install Tor: Download and install Tor from [https://www.torproject.org/](https://www.torproject.org/).
+
+2. Run Tor as a SOCKS Proxy:
+   - Open Tor Browser and go to `Settings`.
+   - Under `Advanced`, find `Network` and note the SOCKS port (default is 9050).
+
+3. Configure the Script:
+   - When running the script, enter 'y' when prompted to use a proxy.
+   - Enter the SOCKS proxy details (e.g., `socks5h://127.0.0.1:9050`).
+
+## Contributing
+Feel free to contribute by opening issues or submitting pull requests. Your contributions are welcome and appreciated!
+
+## Disclaimer
+This script is for educational purposes only. Use it responsibly and comply with the terms of service of the websites you interact with. The author is not responsible for any misuse of this script.

@@ -10,6 +10,7 @@ This Python script allows you to download images from a given URL, filter them b
 - Downloads images concurrently using threads
 - Supports custom User-Agent for each request
 - Option to overwrite existing files
+- Supports http proxy configurations
 
 
 ## Usage
